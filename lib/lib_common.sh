@@ -9,13 +9,14 @@
 #     http://linkedin.com/in/alexandrosgidarakos
 # Dependencies:
 #   - Bash
+#   - GNU coreutils
 # Standards:
 #   - Google Shell Style Guide
 #     https://google.github.io/styleguide/shellguide.html
 #   - Conventional Commits
 #     https://www.conventionalcommits.org
 # Tested on:
-#   - Ubuntu 22.04.5 LTS, Bash 5.1.16
+#   - Ubuntu 22.04.5 LTS, Bash 5.1.16, coreutils 8.32
 # Copyright 2025, Alexandros Gidarakos
 # SPDX-License-Identifier: MIT
 # shellcheck shell=bash
@@ -46,12 +47,15 @@ common::log() {
   local -r CALLER="${FUNCNAME[1]}"
   local -r LOG_MESSAGE="$(date +"%Y-%m-%dT%H:%M:%S.%3N%:z") [$LOG_LEVEL] [${CALLER:-${FUNCNAME[0]}}] $2"
 
+  # Check if there are sufficient arguments
   if [[ "$#" -lt 2 ]]; then
     echo "Error: arguments are missing" >&2
 
     return $ERROR_MISSING_ARGS
   fi
 
+  # Print the formatted log message to the appropriate output stream
+  # Also check if the log level argument is valid
   case "$1" in
     debug | info | warn) echo "$LOG_MESSAGE";;
     error | fatal) echo "$LOG_MESSAGE" >&2;;
@@ -80,6 +84,7 @@ common::split_date_range() {
   local -a dates=()
   local current_date=""
 
+  # Check if there are sufficient arguments
   if [[ "$#" -lt 3 ]]; then
     common::log error "Arguments are missing"
 
@@ -107,19 +112,23 @@ common::split_date_range() {
     return $ERROR_INVALID_INTERVAL
   fi
 
+  # Check if start date is chronologically before end date
   if [[ "$start_date" > "$end_date" ]]; then
     common::log error "Start date \"$1\" is after end date \"$2\""
 
     return $ERROR_START_AFTER_END
   fi
 
+  # Initialise current date before the upcoming loop
   current_date="$start_date"
 
+  # Loop to build the array of dates
   while [[ "$current_date" < "$end_date" ]]; do
     dates+=("$current_date")
     current_date="$(date -u -d "$current_date + $interval" +"%Y-%m-%dT%H:%M:%SZ")"
   done
 
+  # Add the last date to the array and print it to STDOUT
   dates+=("$end_date")
   echo "${dates[@]}"
 }
