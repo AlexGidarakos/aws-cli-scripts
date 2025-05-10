@@ -29,19 +29,19 @@ readonly ERROR_INVALID_END=4
 readonly ERROR_INVALID_INTERVAL=5
 readonly ERROR_START_AFTER_END=6
 
-#####################################################
+#######################################################
 # A simple console logging function.
 # Globals:
 #   None
 # Arguments:
-#   Log level, one of debug, info, warn, error, fatal
-#   Message
+#   - Log level, one of debug, info, warn, error, fatal
+#   - Message
 # Outputs:
-#   Writes a formatted log message to STDOUT
-#   Writes error messages to STDERR
+#   - Writes a formatted log message to STDOUT
+#   - Writes error messages to STDERR
 # Returns:
 #   0 on success, non-zero on error
-#####################################################
+#######################################################
 common::log() {
   local -r LOG_LEVEL="${1^^}"
   local -r CALLER="${FUNCNAME[1]}"
@@ -63,20 +63,20 @@ common::log() {
   esac
 }
 
-#####################################################
+########################################################
 # Split a date range into smaller chunks.
 # Globals:
 #   None
 # Arguments:
-#   Start date in UTC ISO 8601 format
-#   End date in UTC ISO 8601 format
-#   Interval, e.g. "2 months", "3 hours", "10 minutes"
+#   - Start date in UTC ISO 8601 format
+#   - End date in UTC ISO 8601 format
+#   - Interval, e.g. "2 months", "3 hours", "10 minutes"
 # Outputs:
-#   Writes an array of UTC ISO 8601 dates to STDOUT
-#   Writes error messages to STDERR
+#   - Writes an array of UTC ISO 8601 dates to STDOUT
+#   - Writes error messages to STDERR
 # Returns:
 #   0 on success, non-zero on error
-#####################################################
+########################################################
 common::split_date_range() {
   local start_date="$1"
   local end_date="$2"
