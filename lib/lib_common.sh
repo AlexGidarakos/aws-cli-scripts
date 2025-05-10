@@ -22,65 +22,93 @@
 
 # Error codes
 readonly ERROR_MISSING_ARGS=1
-readonly ERROR_INVALID_START=2
-readonly ERROR_INVALID_END=3
-readonly ERROR_INVALID_INTERVAL=4
-readonly ERROR_START_AFTER_END=5
+readonly ERROR_INVALID_LOG_LEVEL=2
+readonly ERROR_INVALID_START=3
+readonly ERROR_INVALID_END=4
+readonly ERROR_INVALID_INTERVAL=5
+readonly ERROR_START_AFTER_END=6
+
+#####################################################
+# A simple console logging function.
+# Globals:
+#   None
+# Arguments:
+#   Log level, one of debug, info, warn, error, fatal
+#   Message
+# Outputs:
+#   Writes a formatted log message to STDOUT
+#   Writes error messages to STDERR
+# Returns:
+#   0 on success, non-zero on error
+#####################################################
+common::log() {
+  local -r LOG_LEVEL="${1^^}"
+  local -r CALLER="${FUNCNAME[1]}"
+  local -r LOG_MESSAGE="$(date +"%Y-%m-%dT%H:%M:%S.%3N%:z") [$LOG_LEVEL] [${CALLER:-${FUNCNAME[0]}}] $2"
+
+  if [[ "$#" -lt 2 ]]; then
+    echo "Error: arguments are missing" >&2
+
+    return $ERROR_MISSING_ARGS
+  fi
+
+  case "$1" in
+    debug | info | warn) echo "$LOG_MESSAGE";;
+    error | fatal) echo "$LOG_MESSAGE" >&2;;
+    *) echo "Error: \"$1\" is not a valid log level" >&2; return $ERROR_INVALID_LOG_LEVEL;;
+  esac
+}
 
 #####################################################
 # Split a date range into smaller chunks.
 # Globals:
 #   None
 # Arguments:
-#   Start date, in UTC ISO 8601 format
-#   End date, in UTC ISO 8601 format
-#   Interval, e.g. "2 months" or "3 hours"
+#   Start date in UTC ISO 8601 format
+#   End date in UTC ISO 8601 format
+#   Interval, e.g. "2 months", "3 hours", "10 minutes"
 # Outputs:
 #   Writes an array of UTC ISO 8601 dates to STDOUT
 #   Writes error messages to STDERR
 # Returns:
 #   0 on success, non-zero on error
 #####################################################
-function shared::split_date_range() {
+common::split_date_range() {
   local start_date="$1"
   local end_date="$2"
   local interval="$3"
   local -a dates=()
   local current_date=""
 
-  if [[ "$#" -ne 3 ]]; then
-    echo "Error: missing arguments" >&2
-    echo "Usage: ${FUNCNAME[0]} <START_DATE> <END_DATE> <INTERVAL>" >&2
-    echo "Examples:" >&2
-    echo "  ${FUNCNAME[0]} 2025-03-02T00:00:00Z 2025-05-09T00:00:00Z \"10 days\"" >&2
-    echo "  ${FUNCNAME[0]} 2023-01-01 2025-01-01 \"3 months\"" >&2
+  if [[ "$#" -lt 3 ]]; then
+    common::log error "Arguments are missing"
 
     return $ERROR_MISSING_ARGS
   fi
 
   # Normalise short form (e.g. 2024-01-01) start date and check if valid date
-  if ! start_date=$(date -u -d "$start_date" +"%Y-%m-%dT%H:%M:%SZ"); then
-    echo "Error: \"$1\" not a valid date" >&2
+  if ! start_date="$(date -u -d "$start_date" +"%Y-%m-%dT%H:%M:%SZ" 2> /dev/null)"; then
+    common::log error "\"$1\" is not a valid date"
 
     return $ERROR_INVALID_START
   fi
 
   # Normalise short form (e.g. 2024-01-01) end date and check if valid date
-  if ! end_date=$(date -u -d "$end_date" +"%Y-%m-%dT%H:%M:%SZ"); then
-    echo "Error: \"$2\" not a valid date" >&2
+  if ! end_date=$(date -u -d "$end_date" +"%Y-%m-%dT%H:%M:%SZ" 2> /dev/null); then
+    common::log error "\"$2\" is not a valid date"
 
     return $ERROR_INVALID_END
   fi
 
   # Check if interval is a valid expression
-  if ! date -u -d "$start_date + $interval"  > /dev/null; then
-    echo "Error: \"$3\" not a valid expression" >&2
+  if ! date -u -d "$start_date + $interval" &> /dev/null; then
+    common::log error "\"$3\" is not a valid expression"
 
     return $ERROR_INVALID_INTERVAL
   fi
 
   if [[ "$start_date" > "$end_date" ]]; then
-    echo "Error: start date \"$1\" after end date \"$2\"" >&2
+    common::log error "Start date \"$1\" is after end date \"$2\""
 
     return $ERROR_START_AFTER_END
   fi
@@ -89,7 +117,7 @@ function shared::split_date_range() {
 
   while [[ "$current_date" < "$end_date" ]]; do
     dates+=("$current_date")
-    current_date=$(date -u -d "$current_date + $interval" +"%Y-%m-%dT%H:%M:%SZ")
+    current_date="$(date -u -d "$current_date + $interval" +"%Y-%m-%dT%H:%M:%SZ")"
   done
 
   dates+=("$end_date")
