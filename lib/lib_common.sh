@@ -49,7 +49,7 @@ common::log() {
 
   # Check if there are sufficient arguments
   if [[ "$#" -lt 2 ]]; then
-    echo "Error: arguments are missing" >&2
+    echo "$(date +"%Y-%m-%dT%H:%M:%S.%3N%:z") [ERROR] [${CALLER:-${FUNCNAME[0]}}] Arguments are missing" >&2
 
     return $ERROR_MISSING_ARGS
   fi
@@ -59,7 +59,7 @@ common::log() {
   case "$1" in
     debug | info | warn) echo "$LOG_MESSAGE";;
     error | fatal) echo "$LOG_MESSAGE" >&2;;
-    *) echo "Error: \"$1\" is not a valid log level" >&2; return $ERROR_INVALID_LOG_LEVEL;;
+    *) echo "$(date +"%Y-%m-%dT%H:%M:%S.%3N%:z") [ERROR] [${CALLER:-${FUNCNAME[0]}}] \"$1\" is not a valid log level" >&2; return $ERROR_INVALID_LOG_LEVEL;;
   esac
 }
 
