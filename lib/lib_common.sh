@@ -24,7 +24,7 @@
 # shellcheck shell=bash  # because of no shebang in a Bash library
 
 # Source other libraries
-. lib_error_codes.sh
+source "$(dirname "${BASH_SOURCE[0]}")/lib_error_codes.sh"
 
 #######################################################
 # A simple console logging function.
