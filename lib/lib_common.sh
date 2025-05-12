@@ -23,13 +23,8 @@
 # ShellCheck directives
 # shellcheck shell=bash  # because of no shebang in a Bash library
 
-# Error codes
-readonly ERROR_MISSING_ARGS=1
-readonly ERROR_INVALID_LOG_LEVEL=2
-readonly ERROR_INVALID_START=3
-readonly ERROR_INVALID_END=4
-readonly ERROR_INVALID_INTERVAL=5
-readonly ERROR_START_AFTER_END=6
+# Source other libraries
+. lib_error_codes.sh
 
 #######################################################
 # A simple console logging function.
