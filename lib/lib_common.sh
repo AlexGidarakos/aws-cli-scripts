@@ -102,18 +102,25 @@ common::split_date_range() {
     return $ERROR_INVALID_END
   fi
 
-  # Check if interval is a valid expression
-  if ! date -u -d "$start_date + $interval" &> /dev/null; then
-    common::log error "\"$3\" is not a valid expression"
-
-    return $ERROR_INVALID_INTERVAL
-  fi
-
   # Check if start date is chronologically before end date
   if [[ "$start_date" > "$end_date" ]]; then
     common::log error "Start date \"$1\" is after end date \"$2\""
 
     return $ERROR_START_AFTER_END
+  fi
+
+  # Check if start date is the same as end date
+  if [[ "$start_date" == "$end_date" ]]; then
+    common::log error "Start date \"$1\" is the same as end date \"$2\""
+
+    return $ERROR_START_EQUALS_END
+  fi
+
+  # Check if interval is a valid expression
+  if ! date -u -d "$start_date + $interval" &> /dev/null; then
+    common::log error "\"$3\" is not a valid expression"
+
+    return $ERROR_INVALID_INTERVAL
   fi
 
   # Initialise current date before the upcoming loop
