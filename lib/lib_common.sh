@@ -19,7 +19,9 @@
 #   - Ubuntu 22.04.5 LTS, Bash 5.1.16, coreutils 8.32
 # Copyright 2025, Alexandros Gidarakos
 # SPDX-License-Identifier: MIT
-# shellcheck shell=bash
+
+# ShellCheck directives
+# shellcheck shell=bash  # because of no shebang in a Bash library
 
 # Error codes
 readonly ERROR_MISSING_ARGS=1
