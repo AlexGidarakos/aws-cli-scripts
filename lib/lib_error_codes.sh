@@ -1,7 +1,5 @@
 # lib/lib_error_codes.sh
-#
 # Library of error codes for the rest of the project.
-#
 # Project URL:
 #   - https://github.com/AlexGidarakos/aws-cli-scripts
 # Authors:
@@ -34,3 +32,5 @@ readonly ERROR_INVALID_INTERVAL=7
 readonly ERROR_CW_QUERY_FILE_NOT_FOUND=8
 readonly ERROR_CW_QUERY_FAILED=9
 readonly ERROR_JSON2CSV_FAILED=10
+readonly ERROR_MISSING_ARG_VALUE=11
+readonly ERROR_INVALID_OPTION=12
