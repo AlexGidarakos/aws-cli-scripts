@@ -1,7 +1,5 @@
 # lib/lib_common.sh
-#
 # Library of utility functions for the rest of the project.
-#
 # Project URL:
 #   - https://github.com/AlexGidarakos/aws-cli-scripts
 # Authors:
@@ -47,7 +45,6 @@ common::log() {
   # Check if there are sufficient arguments
   if [[ "$#" -lt 2 ]]; then
     echo "$(date +"%Y-%m-%dT%H:%M:%S.%3N%:z") [ERROR] [${CALLER:-${FUNCNAME[0]}}] Arguments are missing" >&2
-
     return $ERROR_MISSING_ARGS
   fi
 
@@ -84,42 +81,36 @@ common::split_date_range() {
   # Check if there are sufficient arguments
   if [[ "$#" -lt 3 ]]; then
     common::log error "Arguments are missing"
-
     return $ERROR_MISSING_ARGS
   fi
 
   # Normalise short form (e.g. 2024-01-01) start date and check if valid date
   if ! start_date="$(date -u -d "$start_date" +"%Y-%m-%dT%H:%M:%SZ" 2> /dev/null)"; then
     common::log error "\"$1\" is not a valid date"
-
     return $ERROR_INVALID_START
   fi
 
   # Normalise short form (e.g. 2024-01-01) end date and check if valid date
   if ! end_date=$(date -u -d "$end_date" +"%Y-%m-%dT%H:%M:%SZ" 2> /dev/null); then
     common::log error "\"$2\" is not a valid date"
-
     return $ERROR_INVALID_END
   fi
 
   # Check if start date is chronologically before end date
   if [[ "$start_date" > "$end_date" ]]; then
     common::log error "Start date \"$1\" is after end date \"$2\""
-
     return $ERROR_START_AFTER_END
   fi
 
   # Check if start date is the same as end date
   if [[ "$start_date" == "$end_date" ]]; then
     common::log error "Start date \"$1\" is the same as end date \"$2\""
-
     return $ERROR_START_EQUALS_END
   fi
 
   # Check if interval is a valid expression
   if ! date -u -d "$start_date + $interval" &> /dev/null; then
     common::log error "\"$3\" is not a valid expression"
-
     return $ERROR_INVALID_INTERVAL
   fi
 
