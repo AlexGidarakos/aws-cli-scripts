@@ -1,0 +1,7 @@
+[
+  {
+    "Id": "m1",
+    "Expression": "SUM(SEARCH('{AWS/WorkSpaces,RunningMode} MetricName=UserConnected', 'Sum', 300))",
+    "Label": "Connected WorkSpaces users"
+  }
+]
