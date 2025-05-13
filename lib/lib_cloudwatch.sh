@@ -1,7 +1,5 @@
 # lib/lib_cloudwatch.sh
-#
 # Library of functions to work with Amazon CloudWatch.
-#
 # Project URL:
 #   - https://github.com/AlexGidarakos/aws-cli-scripts
 # Authors:
@@ -56,14 +54,12 @@ cloudwatch::get_metric_data() {
   # Check if there are sufficient arguments
   if [[ "$#" -lt 4 ]]; then
     common::log error "Arguments are missing"
-
     return $ERROR_MISSING_ARGS
   fi
 
   # Check if query file exists
   if [[ ! -f "$query_file" ]]; then
     common::log error "Query file \"$query_file\" not found"
-
     return $ERROR_CW_QUERY_FILE_NOT_FOUND
   fi
 
@@ -99,7 +95,6 @@ cloudwatch::get_metric_data() {
     # Check if query returned error
     if [[ $return_code -ne 0 ]]; then
       common::log error "CloudWatch Metrics query failed"
-
       return $ERROR_CW_QUERY_FAILED
     fi
 
@@ -116,7 +111,6 @@ cloudwatch::get_metric_data() {
     # Check if results conversion returned error
     if [[ $return_code -ne 0 ]]; then
       common::log error "Conversion from JSON to CSV failed"
-
       return $ERROR_JSON2CSV_FAILED
     fi
   done
