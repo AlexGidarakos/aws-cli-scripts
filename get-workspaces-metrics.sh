@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# get-workspaces-successful-connections.sh
-# Query CloudWatch Metrics for no. of successful WorkSpaces connections.
+# get-workspaces-metrics.sh
+# Query CloudWatch for WorkSpaces-related Metrics.
 # Project URL:
 #   - https://github.com/AlexGidarakos/aws-cli-scripts
 # Authors:
