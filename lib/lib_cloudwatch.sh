@@ -76,7 +76,7 @@ cloudwatch::get_metric_data() {
   IFS=" " read -r -a dates < <(echo "$output")
 
   # Output CSV header to STDOUT
-  echo '"Date","Successful connections"'
+  echo '"Date","Value"'
 
   # Create temporary JSON file
   temp_file="$(mktemp /tmp/results.json.XXXXXX)"

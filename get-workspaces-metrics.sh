@@ -20,7 +20,7 @@
 # Tested on:
 #   - Ubuntu 22.04.5 LTS, Bash 5.1.16, coreutils 8.32, aws-cli 2.26.2, jq 1.6
 # Arguments:
-#   - Path to JSON query file for input (optional)
+#   - Path to JSON query file for input
 #   - Path to CSV results file for output (optional)
 #   - Start date in UTC ISO 8601 format
 #   - End date in UTC ISO 8601 format
@@ -45,7 +45,7 @@ interval="1 month"
 
 # Function to display usage
 usage() {
-  echo "Usage: $0 [-q|--query-file FILE] [-r|--results-file FILE] -s|--start-date DATE -e|--end-date DATE [-i|--interval EXPR]"
+  echo "Usage: $0 -q|--query-file FILE [-r|--results-file FILE] -s|--start-date DATE -e|--end-date DATE [-i|--interval EXPR]"
 }
 
 # Parse arguments
@@ -107,8 +107,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check mandatory arguments
-if [[ -z "$start_date" ]] || [[ -z "$end_date" ]]; then
+if [[ -z "$query_file" ]] || [[ -z "$start_date" ]] || [[ -z "$end_date" ]]; then
   common::log error "Arguments are missing"
+  usage
   exit "$ERROR_MISSING_ARGS"
 fi
 
@@ -117,21 +118,6 @@ if [[ "$results_file" ]]; then
   exec 3> "$results_file"
 else
   exec 3>&1
-fi
-
-# If JSON query file not provided, create a temporary with default query
-if [[ ! "$query_file" ]]; then
-  query_file="$(mktemp /tmp/query.json.XXXXXX)"
-  trap 'rm -f "$query_file"' EXIT
-  cat > "$query_file" << EOF
-[
-  {
-    "Id": "m1",
-    "Expression": "SUM(SEARCH('{AWS/WorkSpaces,RunningMode} MetricName=ConnectionSuccess', 'Sum', 3600))",
-    "Label": "Successful connections"
-  }
-]
-EOF
 fi
 
 # Call CloudWatch get metric data function
